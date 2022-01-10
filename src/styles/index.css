@@ -28,12 +28,12 @@ body {
   width: 100vw;
   align-items: center;
   flex-direction: column;
-  /* background-color: darkgrey; */
+  background-color: #1b1b1e;
 }
 
 .header {
   flex: 30%;
-  background-color: tomato;
+  background-color: #373f51;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -58,6 +58,7 @@ body {
 .header button {
   width: 70px;
   height: 87px;
+  background-color: #a9bcd0;
   border: none;
   border-bottom-right-radius: 8px;
   border-top-right-radius: 8px;
@@ -88,24 +89,25 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0;
 }
 
 .task .taskContent span {
   display: grid;
   place-items: center;
-  border: 1px solid white;
+  border: 1px solid #d8dbe2;
   width: 100%;
   height: 100%;
   font-size: 18px;
   border-right: none;
-  background-color: tomato;
+  background-color: #58a4b0;
 }
 
 .task button {
   flex: 20%;
   height: 100%;
   border: none;
-  background-color: lightseagreen;
+  background-color: #a9bcd0;
   border-top-right-radius: 8px;
   border-bottom-right-radius: 8px;
   color: white;

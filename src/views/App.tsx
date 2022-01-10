@@ -1,13 +1,24 @@
 import React, { ChangeEvent } from 'react';
+import { inputContainerContext } from '../context/inputContainerContext';
+import { taskContext } from '../context/taskContext';
 import { ITask } from '../model/ITask';
 import '../styles/index.css';
-import TodoTask from './TodoTask';
+import InputContainer from './InputContainer';
+import TodoTaskCell from './TodoTaskCell';
 
 const App: React.FC = () => {
 
   const [task, setTask] = React.useState<string>('');
-  const [deadline, setDeadline] = React.useState<number>(Number.NaN);
+  const [deadline, setDeadline] = React.useState<number>(0);
   const [todoList, setTodoList] = React.useState<ITask[]>([]);
+
+  const makeCurrentTask = (): ITask => {
+    const currentTask: ITask = {
+      taskName: task,
+      deadline: deadline
+    };
+    return currentTask;
+  }
 
   const onHandleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     let changedValue = event.target.value;
@@ -19,10 +30,7 @@ const App: React.FC = () => {
   }
 
   const onAddTask = (): void => {
-    const newTask: ITask = {
-      taskName: task,
-      deadline: deadline
-    };
+    const newTask = makeCurrentTask();
     setTodoList([...todoList, newTask]);
 
     onClear();
@@ -33,45 +41,26 @@ const App: React.FC = () => {
     setDeadline(Number.NaN);
   }
 
-  const completeTask = (taskNameToDelete: string): void => {
-    const filteredTodoList = todoList.filter((task: ITask) => {
-      return task.taskName !== taskNameToDelete;
+  const onCompleteTask = (task: ITask): void => {
+    const filteredTodoList = todoList.filter((listTask: ITask) => {
+      if (task.taskName === listTask.taskName) {
+        return task.deadline !== listTask.deadline;
+      }
+      return task.taskName !== listTask.taskName;
     });
     setTodoList(filteredTodoList);
   }
 
   return (
     <div className="appMain">
-      <div className="header">
-        <div className="inputContainer">
-          <input
-            type="text"
-            placeholder="Task"
-            name="task"
-            value={task}
-            onChange={onHandleChange}
-          />
-          <input
-            type="number"
-            placeholder="Deadline (days)"
-            name="deadline"
-            value={deadline}
-            onChange={onHandleChange}
-          />
-        </div>
-        <button
-          onClick={onAddTask}
-        >
-          Add task
-        </button>
-      </div>
+      <inputContainerContext.Provider value={{ data: makeCurrentTask(), onHandleChange: onHandleChange, onAddTask: onAddTask }}>
+        <InputContainer key={'inputContainerKey'}/>
+      </inputContainerContext.Provider>
       <div className="todoList">
         {todoList.map((task: ITask, key: number) => {
-          return <TodoTask
-            task={task}
-            completeTask={completeTask}
-            key={key}
-          />
+          return <taskContext.Provider value={{ data: task, onCompleteTask: onCompleteTask }}>
+            <TodoTaskCell key={`todoTaskCellKey-${key}`} />
+          </taskContext.Provider>
         })}
       </div>
     </div>
@@ -79,52 +68,3 @@ const App: React.FC = () => {
 }
 
 export default App;
-
-/*
-// REACT createContext/useContext example (render <TestParent /> somewhere)
-
-interface ITestModel {
-  fullname: string;
-  age: number;
-}
-
-interface ITestModelContext {
-  data: ITestModel;
-}
-
-const testModelContext = React.createContext<Partial<ITestModelContext>>({});
-
-const TestParent = () => {
-  return (
-    <testModelContext.Provider value={{ data: { fullname: 'dsf', age: 12 } }}>
-      <TestChild />
-    </testModelContext.Provider >
-  );
-}
-
-const TestChild = () => {
-
-  const context = React.useContext(testModelContext);
-
-  return (
-    <div>
-      <p>
-        {context.data?.fullname}
-      </p>
-      <p>
-        {context.data?.age}
-      </p>
-      <button
-        onClick={() => {
-          if (context.data?.age !== null && context.data?.age) {
-            context.data.age++;
-          }
-          //alert(context.data?.age);
-        }}>
-        increment me
-      </button>
-    </div>
-  );
-}
-
-*/
